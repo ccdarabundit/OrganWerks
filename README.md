@@ -24,6 +24,9 @@ Reed Pipes (Requires new excitation source based on reed and conical horn geomet
 
 2. Better excitation. Need better model of chiff using turbulence noise.
 
-3. Better implementation
-Increase Lagrange interpolater to 4th order, declick delay parameters. Clean up engine to ease of implementation. The werks...
+3. Better implementation  
+* Increase Lagrange interpolater to 4th order
+* Declick delay parameters. 
+* Clean up engine to ease of implementation
+* The werks...
 
