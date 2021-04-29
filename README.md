@@ -13,12 +13,13 @@ synthesizer in JUCE. This is nice because it allows JUCE to handle polyphony.
 
 ## TO-DOs
 
-1. More pipes! Currently have a Principal 4', 8', 16'. Could do 2 2/3', 2', or 5 1/3' easily.
+1. More pipes! Currently have a Principal 4', 8', 16'. Could do 2 2/3', 2', or 5 1/3' easily.  
 Standard Flue Pipe (Should be a tweaking of waveguide one-pole):
 * Flutes
 * Strings
-* Vox Celeste (dual flutes detuned by 2 Hz for T = 2 beat/s vibrato)
-Reed Pipes (Requires new excitation source based on reed and conical horn geometry):
+* Celeste (dual flutes detuned by 2 Hz for T = 2 beat/s vibrato)
+  
+Reed Pipes (Requires new excitation source based on reed and conical horn geometry):  
 * Trumpets
 
 2. Better excitation. Need better model of chiff using turbulence noise.
