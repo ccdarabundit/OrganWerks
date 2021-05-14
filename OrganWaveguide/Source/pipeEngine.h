@@ -651,32 +651,32 @@ class mydsp : public dsp {
 	float fRec0[2];
 	int fSampleRate;
 	float fConst0;
-	FAUSTFLOAT fEntry1;
-	float fRec3[2];
 	float fConst1;
+	FAUSTFLOAT fEntry1;
+	float fRec4[2];
+	float fRec3[2];
 	float fConst2;
 	float fConst3;
+	float fConst4;
 	int IOTA;
-	float fRec5[16384];
-	int iConst4;
+	float fRec6[16384];
 	int iConst5;
 	float fVec0[2];
-	float fRec4[2];
+	float fRec5[2];
 	FAUSTFLOAT fEntry2;
-	float fRec6[2];
+	float fRec7[2];
 	FAUSTFLOAT fButton0;
 	int iVec1[2];
-	int iRec7[2];
+	int iRec8[2];
 	float fVec2[8192];
 	int iConst6;
-	float fConst7;
 	float fVec3[16384];
 	float fRec1[3];
 	FAUSTFLOAT fEntry3;
-	float fRec8[2];
-	float fConst8;
-	int iRec9[2];
+	float fRec9[2];
+	float fConst7;
 	int iRec10[2];
+	int iRec11[2];
 	
  public:
 	
@@ -760,14 +760,13 @@ class mydsp : public dsp {
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
 		fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = (1.0f / std::tan((6283.18555f / fConst0)));
-		fConst2 = (1.0f / (fConst1 + 1.0f));
-		fConst3 = (1.0f - fConst1);
-		iConst4 = int((0.0500000007f * fConst0));
-		iConst5 = (iConst4 + 1);
-		iConst6 = (int((0.5f * float(iConst4))) + 1);
-		fConst7 = (0.5f * fConst0);
-		fConst8 = (1.0f / std::max<float>(1.0f, (0.100000001f * fConst0)));
+		fConst1 = (0.00100000005f * fConst0);
+		fConst2 = (1.0f / std::tan((6283.18555f / fConst0)));
+		fConst3 = (1.0f / (fConst2 + 1.0f));
+		fConst4 = (1.0f - fConst2);
+		iConst5 = int((0.0500000007f * fConst0));
+		iConst6 = int((0.5f * float(iConst5)));
+		fConst7 = (1.0f / std::max<float>(1.0f, (0.100000001f * fConst0)));
 	}
 	
 	virtual void instanceResetUserInterface() {
@@ -783,44 +782,47 @@ class mydsp : public dsp {
 			fRec0[l0] = 0.0f;
 		}
 		for (int l1 = 0; (l1 < 2); l1 = (l1 + 1)) {
-			fRec3[l1] = 0.0f;
+			fRec4[l1] = 0.0f;
+		}
+		for (int l2 = 0; (l2 < 2); l2 = (l2 + 1)) {
+			fRec3[l2] = 0.0f;
 		}
 		IOTA = 0;
-		for (int l2 = 0; (l2 < 16384); l2 = (l2 + 1)) {
-			fRec5[l2] = 0.0f;
-		}
-		for (int l3 = 0; (l3 < 2); l3 = (l3 + 1)) {
-			fVec0[l3] = 0.0f;
+		for (int l3 = 0; (l3 < 16384); l3 = (l3 + 1)) {
+			fRec6[l3] = 0.0f;
 		}
 		for (int l4 = 0; (l4 < 2); l4 = (l4 + 1)) {
-			fRec4[l4] = 0.0f;
+			fVec0[l4] = 0.0f;
 		}
 		for (int l5 = 0; (l5 < 2); l5 = (l5 + 1)) {
-			fRec6[l5] = 0.0f;
+			fRec5[l5] = 0.0f;
 		}
 		for (int l6 = 0; (l6 < 2); l6 = (l6 + 1)) {
-			iVec1[l6] = 0;
+			fRec7[l6] = 0.0f;
 		}
 		for (int l7 = 0; (l7 < 2); l7 = (l7 + 1)) {
-			iRec7[l7] = 0;
+			iVec1[l7] = 0;
 		}
-		for (int l8 = 0; (l8 < 8192); l8 = (l8 + 1)) {
-			fVec2[l8] = 0.0f;
+		for (int l8 = 0; (l8 < 2); l8 = (l8 + 1)) {
+			iRec8[l8] = 0;
 		}
-		for (int l9 = 0; (l9 < 16384); l9 = (l9 + 1)) {
-			fVec3[l9] = 0.0f;
+		for (int l9 = 0; (l9 < 8192); l9 = (l9 + 1)) {
+			fVec2[l9] = 0.0f;
 		}
-		for (int l10 = 0; (l10 < 3); l10 = (l10 + 1)) {
-			fRec1[l10] = 0.0f;
+		for (int l10 = 0; (l10 < 16384); l10 = (l10 + 1)) {
+			fVec3[l10] = 0.0f;
 		}
-		for (int l11 = 0; (l11 < 2); l11 = (l11 + 1)) {
-			fRec8[l11] = 0.0f;
+		for (int l11 = 0; (l11 < 3); l11 = (l11 + 1)) {
+			fRec1[l11] = 0.0f;
 		}
 		for (int l12 = 0; (l12 < 2); l12 = (l12 + 1)) {
-			iRec9[l12] = 0;
+			fRec9[l12] = 0.0f;
 		}
 		for (int l13 = 0; (l13 < 2); l13 = (l13 + 1)) {
 			iRec10[l13] = 0;
+		}
+		for (int l14 = 0; (l14 < 2); l14 = (l14 + 1)) {
+			iRec11[l14] = 0;
 		}
 	}
 	
@@ -864,49 +866,75 @@ class mydsp : public dsp {
 		int iSlow6 = (iSlow3 == 0);
 		for (int i = 0; (i < count); i = (i + 1)) {
 			fRec0[0] = (fSlow0 + (0.999000013f * fRec0[1]));
-			fRec3[0] = (fSlow1 + (0.999000013f * fRec3[1]));
-			float fTemp0 = (fConst0 / fRec3[0]);
+			fRec4[0] = (fSlow1 + (0.999000013f * fRec4[1]));
+			fRec3[0] = ((0.999000013f * fRec3[1]) + (fConst1 / fRec4[0]));
+			float fTemp0 = (fRec3[0] + -1.49999499f);
 			float fTemp1 = std::floor(fTemp0);
-			float fTemp2 = (fTemp1 + (1.0f - fTemp0));
-			fRec5[(IOTA & 16383)] = (fConst2 * ((fRec1[1] + fRec1[2]) - (fConst3 * fRec5[((IOTA - 1) & 16383)])));
-			int iTemp3 = int(fTemp0);
-			int iTemp4 = std::min<int>(iConst5, std::max<int>(0, iTemp3));
-			float fTemp5 = (fTemp0 - fTemp1);
-			int iTemp6 = std::min<int>(iConst5, std::max<int>(0, (iTemp3 + 1)));
-			float fTemp7 = ((fRec5[((IOTA - iTemp4) & 16383)] * fTemp2) + (fTemp5 * fRec5[((IOTA - iTemp6) & 16383)]));
-			fVec0[0] = fTemp7;
-			fRec4[0] = (0.0f - (fConst2 * ((fConst3 * fRec4[1]) - (fTemp7 + fVec0[1]))));
-			fRec6[0] = (fSlow2 + (0.999000013f * fRec6[1]));
+			float fTemp2 = (fRec3[0] + (-1.0f - fTemp1));
+			float fTemp3 = (0.0f - fTemp2);
+			float fTemp4 = (fRec3[0] + (-2.0f - fTemp1));
+			float fTemp5 = (0.0f - (0.5f * fTemp4));
+			float fTemp6 = (fRec3[0] + (-3.0f - fTemp1));
+			float fTemp7 = (0.0f - (0.333333343f * fTemp6));
+			float fTemp8 = (fRec3[0] + (-4.0f - fTemp1));
+			float fTemp9 = (0.0f - (0.25f * fTemp8));
+			fRec6[(IOTA & 16383)] = (0.0f - (fConst3 * ((fConst4 * fRec6[((IOTA - 1) & 16383)]) - (fRec1[1] + fRec1[2]))));
+			int iTemp10 = int(fTemp0);
+			int iTemp11 = std::min<int>(iConst5, std::max<int>(0, iTemp10));
+			float fTemp12 = (fRec3[0] - fTemp1);
+			int iTemp13 = std::min<int>(iConst5, std::max<int>(0, (iTemp10 + 1)));
+			float fTemp14 = (0.0f - fTemp4);
+			float fTemp15 = (0.0f - (0.5f * fTemp6));
+			float fTemp16 = (0.0f - (0.333333343f * fTemp8));
+			int iTemp17 = std::min<int>(iConst5, std::max<int>(0, (iTemp10 + 2)));
+			float fTemp18 = (0.0f - fTemp6);
+			float fTemp19 = (0.0f - (0.5f * fTemp8));
+			float fTemp20 = (fTemp2 * fTemp4);
+			int iTemp21 = std::min<int>(iConst5, std::max<int>(0, (iTemp10 + 3)));
+			float fTemp22 = (0.0f - fTemp8);
+			float fTemp23 = (fTemp20 * fTemp6);
+			int iTemp24 = std::min<int>(iConst5, std::max<int>(0, (iTemp10 + 4)));
+			float fTemp25 = (((((fRec6[((IOTA - iTemp11) & 16383)] * fTemp3) * fTemp5) * fTemp7) * fTemp9) + (fTemp12 * ((((((fRec6[((IOTA - iTemp13) & 16383)] * fTemp14) * fTemp15) * fTemp16) + (0.5f * (((fTemp2 * fRec6[((IOTA - iTemp17) & 16383)]) * fTemp18) * fTemp19))) + (0.166666672f * ((fTemp20 * fRec6[((IOTA - iTemp21) & 16383)]) * fTemp22))) + (0.0416666679f * (fTemp23 * fRec6[((IOTA - iTemp24) & 16383)])))));
+			fVec0[0] = fTemp25;
+			fRec5[0] = (0.0f - (fConst3 * ((fConst4 * fRec5[1]) - (fTemp25 + fVec0[1]))));
+			fRec7[0] = (fSlow2 + (0.999000013f * fRec7[1]));
 			iVec1[0] = iSlow3;
-			iRec7[0] = ((1103515245 * iRec7[1]) + 12345);
-			float fTemp8 = ((0.25f * fTemp7) + (fSlow4 * float(iRec7[0])));
-			fVec2[(IOTA & 8191)] = fTemp8;
-			float fTemp9 = (fConst7 / fRec3[0]);
-			int iTemp10 = int(fTemp9);
-			float fTemp11 = std::floor(fTemp9);
-			float fTemp12 = ((fRec4[0] + fRec6[0]) - (float(tanhf(float(((fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, iTemp10))) & 8191)] * (fTemp11 + (1.0f - fTemp9))) + ((fTemp9 - fTemp11) * fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, (iTemp10 + 1)))) & 8191)]))))) * ((fRec3[0] > 500.0f) ? (0.00100000005f * fRec3[0]) : 0.5f)));
-			fVec3[(IOTA & 16383)] = fTemp12;
-			fRec1[0] = ((fTemp2 * fVec3[((IOTA - iTemp4) & 16383)]) + (fTemp5 * fVec3[((IOTA - iTemp6) & 16383)]));
-			float fRec2 = fTemp12;
-			fRec8[0] = (fSlow5 + (0.999000013f * fRec8[1]));
-			iRec9[0] = (iSlow3 + (iRec9[1] * (iVec1[1] >= iSlow3)));
-			iRec10[0] = (iSlow6 * (iRec10[1] + 1));
-			float fTemp13 = (0.5f * ((fRec0[0] * ((fRec1[0] * fRec8[0]) + (fRec2 * (1.0f - fRec8[0])))) * std::max<float>(0.0f, (std::min<float>((fConst8 * float(iRec9[0])), 1.0f) - (fConst8 * float(iRec10[0]))))));
-			output0[i] = FAUSTFLOAT(fTemp13);
-			output1[i] = FAUSTFLOAT(fTemp13);
+			iRec8[0] = ((1103515245 * iRec8[1]) + 12345);
+			float fTemp26 = ((0.25f * fTemp25) + (fSlow4 * float(iRec8[0])));
+			fVec2[(IOTA & 8191)] = fTemp26;
+			float fTemp27 = (0.5f * fRec3[0]);
+			float fTemp28 = (fTemp27 + -1.49999499f);
+			int iTemp29 = int(fTemp28);
+			float fTemp30 = std::floor(fTemp28);
+			float fTemp31 = (fTemp27 + (-1.0f - fTemp30));
+			float fTemp32 = (fTemp27 + (-2.0f - fTemp30));
+			float fTemp33 = (fTemp27 + (-3.0f - fTemp30));
+			float fTemp34 = (fTemp27 + (-4.0f - fTemp30));
+			float fTemp35 = (fTemp31 * fTemp32);
+			float fTemp36 = ((fRec5[0] + fRec7[0]) - (float(tanhf(float((((((fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, iTemp29))) & 8191)] * (0.0f - fTemp31)) * (0.0f - (0.5f * fTemp32))) * (0.0f - (0.333333343f * fTemp33))) * (0.0f - (0.25f * fTemp34))) + ((fTemp27 - fTemp30) * ((((((fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, (iTemp29 + 1)))) & 8191)] * (0.0f - fTemp32)) * (0.0f - (0.5f * fTemp33))) * (0.0f - (0.333333343f * fTemp34))) + (0.5f * (((fTemp31 * fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, (iTemp29 + 2)))) & 8191)]) * (0.0f - fTemp33)) * (0.0f - (0.5f * fTemp34))))) + (0.166666672f * ((fTemp35 * fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, (iTemp29 + 3)))) & 8191)]) * (0.0f - fTemp34)))) + (0.0416666679f * ((fTemp35 * fTemp33) * fVec2[((IOTA - std::min<int>(iConst6, std::max<int>(0, (iTemp29 + 4)))) & 8191)])))))))) * ((fRec4[0] > 500.0f) ? (0.00100000005f * fRec4[0]) : 0.5f)));
+			fVec3[(IOTA & 16383)] = fTemp36;
+			fRec1[0] = (((((fTemp3 * fTemp5) * fTemp7) * fTemp9) * fVec3[((IOTA - iTemp11) & 16383)]) + (fTemp12 * ((((((fTemp14 * fTemp15) * fTemp16) * fVec3[((IOTA - iTemp13) & 16383)]) + (0.5f * (((fTemp2 * fTemp18) * fTemp19) * fVec3[((IOTA - iTemp17) & 16383)]))) + (0.166666672f * ((fTemp20 * fTemp22) * fVec3[((IOTA - iTemp21) & 16383)]))) + (0.0416666679f * (fTemp23 * fVec3[((IOTA - iTemp24) & 16383)])))));
+			float fRec2 = fTemp36;
+			fRec9[0] = (fSlow5 + (0.999000013f * fRec9[1]));
+			iRec10[0] = (iSlow3 + (iRec10[1] * (iVec1[1] >= iSlow3)));
+			iRec11[0] = (iSlow6 * (iRec11[1] + 1));
+			float fTemp37 = (0.5f * ((fRec0[0] * ((fRec1[0] * fRec9[0]) + (fRec2 * (1.0f - fRec9[0])))) * std::max<float>(0.0f, (std::min<float>((fConst7 * float(iRec10[0])), 1.0f) - (fConst7 * float(iRec11[0]))))));
+			output0[i] = FAUSTFLOAT(fTemp37);
+			output1[i] = FAUSTFLOAT(fTemp37);
 			fRec0[1] = fRec0[0];
+			fRec4[1] = fRec4[0];
 			fRec3[1] = fRec3[0];
 			IOTA = (IOTA + 1);
 			fVec0[1] = fVec0[0];
-			fRec4[1] = fRec4[0];
-			fRec6[1] = fRec6[0];
+			fRec5[1] = fRec5[0];
+			fRec7[1] = fRec7[0];
 			iVec1[1] = iVec1[0];
-			iRec7[1] = iRec7[0];
+			iRec8[1] = iRec8[0];
 			fRec1[2] = fRec1[1];
 			fRec1[1] = fRec1[0];
-			fRec8[1] = fRec8[0];
-			iRec9[1] = iRec9[0];
+			fRec9[1] = fRec9[0];
 			iRec10[1] = iRec10[0];
+			iRec11[1] = iRec11[0];
 		}
 	}
 
