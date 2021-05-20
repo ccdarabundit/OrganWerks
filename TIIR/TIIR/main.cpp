@@ -11,13 +11,16 @@
 #include "TIIR.h"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    tiir<float, 58> tiir_test;
-    tiir_test.updateCoefs(-0.00000237415232038436, -1.21463260814617735051, -0.18763544004887952599);
+    int nTaps = 23;
+    tiirModal<float, double, 23> tiirModalTest;
+    float poles[2] = {3.594138106591555, -1.141572963219655};
+    float res[2] = {-2.602794606723534e-13, -0.003045487708501};
+    float tGain[2] = {6.007302545589120e+12, -21.017667305919375};
+    tiirModalTest.setCoefs(poles, res, tGain);
     // Create an impulse
-    float delta[68];
-    float out[68];
-    for (int i = 0; i < 68; ++i)
+    float delta[nTaps+50];
+    float out[nTaps+50];
+    for (int i = 0; i < nTaps+50; ++i)
     {
         delta[i] = 0;
         out[i] = 0;
@@ -25,46 +28,21 @@ int main(int argc, const char * argv[]) {
     delta[0] = 1.f;
     float* inputs = {&delta[0]};
     float* outputs = {&out[0]};
-    tiir_test.compute(68, &inputs, &outputs);
+    tiirModalTest.compute(nTaps+50, &inputs, &outputs);
     
-    std::ofstream myfile("tiir.txt");
+    std::ofstream myfile("tiirModal.csv");
     if (myfile.is_open())
     {
-        std::cout << "Printing to file" << std::endl;
-    for (int i = 0; i < 68; ++i)
+    for (int i = 0; i < nTaps+50; ++i)
     {
         myfile << outputs[i] ;
-        if (i < 67)
+        if (i < nTaps+50-1)
             myfile << ", ";
         else
             myfile << "\n";
     }
         
     myfile.close();
-    }
-    else std::cout << "Unable to open file" << std::endl;
-    
-    tiirpp<float, 58> tiirpp_test;
-    float tiirCoefs[3] = {-0.00000237415232038436, -1.21463260814617735051, -0.18763544004887952599};
-    float iirCoefs[3] = {-0.103841983703594, 0.0595728030857674, 0.672771204016737};
-    
-    tiirpp_test.updateCoefs(tiirCoefs, iirCoefs);
-    tiirpp_test.compute(68, &inputs, &outputs);
-    
-    std::ofstream myfile2("tiirpp.txt");
-    if (myfile2.is_open())
-    {
-        std::cout << "Printing to file" << std::endl;
-    for (int i = 0; i < 68; ++i)
-    {
-        myfile2 << outputs[i] ;
-        if (i < 67)
-            myfile2 << ", ";
-        else
-            myfile2 << "\n";
-    }
-        
-    myfile2.close();
     }
     else std::cout << "Unable to open file" << std::endl;
     return 0;
