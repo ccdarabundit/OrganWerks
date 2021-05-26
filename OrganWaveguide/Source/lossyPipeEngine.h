@@ -681,12 +681,10 @@ class lossyPipeEngine : public dsp {
 	float fRec8[2];
 	float fConst6;
 	int iRec9[2];
+	float fConst7;
 	int iRec10[2];
-
-    // Add in our coefficieints
-    static int nTaps[65];
     static float refIIRCoefs[65][5];
-	
+    static int nTaps[65];
  public:
 	
 	void metadata(Meta* m) { 
@@ -770,7 +768,8 @@ class lossyPipeEngine : public dsp {
 		iConst3 = int(fConst2);
 		fConst4 = (0.0011363636f * fConst0);
 		iConst5 = int((0.5f * float(iConst3)));
-		fConst6 = (1.0f / std::max<float>(1.0f, fConst2));
+		fConst6 = (1.0f / std::max<float>(1.0f, (0.00999999978f * fConst0)));
+		fConst7 = (1.0f / std::max<float>(1.0f, fConst2));
 	}
 	
 	virtual void instanceResetUserInterface() {
@@ -883,7 +882,6 @@ class lossyPipeEngine : public dsp {
         setInitialDelay(int(fEntry2));
 		float fSlow0 = (9.99999975e-05f * float(fEntry0));
 		float fSlow1 = float(fEntry1);
-        
 		float fSlow2 = std::pow(2.0f, (0.0833333358f * float((int(float(fEntry2)) + -69))));
 		float fSlow3 = (fConst1 / fSlow2);
 		int iSlow4 = (int(float(fEntry3)) + 2);
@@ -958,7 +956,7 @@ class lossyPipeEngine : public dsp {
 			fRec8[0] = (fSlow55 + (0.999000013f * fRec8[1]));
 			iRec9[0] = (iSlow36 + (iRec9[1] * (iVec0[1] >= iSlow36)));
 			iRec10[0] = (iSlow56 * (iRec10[1] + 1));
-			float fTemp4 = (0.5f * ((fRec0[0] * ((fRec1[((IOTA - 0) & 8191)] * fRec8[0]) + (fRec2 * (1.0f - fRec8[0])))) * std::max<float>(0.0f, (std::min<float>((fConst6 * float(iRec9[0])), 1.0f) - (fConst6 * float(iRec10[0]))))));
+			float fTemp4 = (0.5f * ((fRec0[0] * ((fRec1[((IOTA - 0) & 8191)] * fRec8[0]) + (fRec2 * (1.0f - fRec8[0])))) * std::max<float>(0.0f, (std::min<float>((fConst6 * float(iRec9[0])), 1.0f) - (fConst7 * float(iRec10[0]))))));
 			output0[i] = FAUSTFLOAT(fTemp4);
 			output1[i] = FAUSTFLOAT(fTemp4);
 			fRec0[1] = fRec0[0];
