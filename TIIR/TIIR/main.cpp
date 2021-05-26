@@ -12,11 +12,13 @@
 
 int main(int argc, const char * argv[]) {
     int nTaps = 23;
-    tiirModal<float, double, 23> tiirModalTest;
-    float poles[2] = {3.594138106591555, -1.141572963219655};
-    float res[2] = {-2.602794606723534e-13, -0.003045487708501};
-    float tGain[2] = {6.007302545589120e+12, -21.017667305919375};
+    tiirModal4<float, double, 23> tiirModalTest;
+    std::complex<float> poles[2] = {3.594138106591555, -1.141572963219655};
+    std::complex<float>  res[2] = {-2.602794606723534e-13, -0.003045487708501};
+    std::complex<float>  tGain[2] = {6.007302545589120e+12, -21.017667305919375};
+    // Try normalizing
     tiirModalTest.setCoefs(poles, res, tGain);
+    tiirModalTest.updateNTaps(nTaps);
     // Create an impulse
     float delta[nTaps+50];
     float out[nTaps+50];
@@ -30,7 +32,7 @@ int main(int argc, const char * argv[]) {
     float* outputs = {&out[0]};
     tiirModalTest.compute(nTaps+50, &inputs, &outputs);
     
-    std::ofstream myfile("tiirModal.csv");
+    std::ofstream myfile("tiirModalT4.csv");
     if (myfile.is_open())
     {
     for (int i = 0; i < nTaps+50; ++i)

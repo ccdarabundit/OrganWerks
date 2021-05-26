@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "OrganSound.h"
+#include "lossyPipeEngine.h"
 #include "pipeEngine.h"
 
 // Adding in Faust
@@ -67,13 +68,13 @@ class OrganVoice : public SynthesiserVoice
 {
 public:
     OrganVoice(){
-        fDSP = new mydsp();
+        fDSP = new lossyPipeEngine();
         fDSP->init(getSampleRate());
         fUI = new MapUI();
         fDSP->buildUserInterface(fUI);
         // Set the constant parameters (not varying now)
         fUI->setParamValue("Jet Offset", 0);
-        fUI->setParamValue("Mix", 0.5);
+        fUI->setParamValue("Mix", 0.75);
         voiceRank = PRINCIPAL8;
         env.setSmooth(getSampleRate(), 0.001);
         
@@ -82,13 +83,13 @@ public:
     // Constructor for given rank
     OrganVoice(Rank newRank)
     {
-        fDSP = new mydsp();
+        fDSP = new lossyPipeEngine();
         fDSP->init(getSampleRate());
         fUI = new MapUI();
         fDSP->buildUserInterface(fUI);
         // Set the constant parameters (not varying now)
         fUI->setParamValue("Jet Offset", 0);
-        fUI->setParamValue("Mix", 0.5);
+        fUI->setParamValue("Mix", 0.75);
         voiceRank = newRank;
         env.setSmooth(getSampleRate(), 0.001);
     }
@@ -105,13 +106,11 @@ public:
     
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound * sound, int currentPitchWheelPosition)
     {
-        // Convert MIDI to Hertz
-        freq = std::pow(2.0, (midiNoteNumber - 69.0)/12.0)*440.0;
         // std::cout << midiNoteNumber << std::endl;
         level = velocity;
         // std::cout << freq << std::endl;
         gate = true;
-        setFreq(freq);
+        setMidi(midiNoteNumber);
         setGain(level*0.5);
         setGate(1);
         env.trigger(true);
@@ -119,13 +118,12 @@ public:
     
     void stopNote(float velocity, bool allowTailOff)
     {
-        if (velocity == 0)
-        {
             clearCurrentNote();
+        
             gate = false;
             setGate(0);
             env.trigger(false);
-        }
+        fDSP->instanceClear();
     }
     
     void pitchWheelMoved(int newPitchWheelValue)
@@ -181,32 +179,19 @@ private:
     Rank voiceRank;
     leakySmooth env;
     // Required functions
-    void setFreq(float freq)
+    void setMidi(int midiNoteNumber)
     {
-        switch (voiceRank)
-        {
-            case PRINCIPAL8:
-            {
-                
-                break;
-            }
-            case PRINCIPAL4:
-            {
-                freq *= (8.0/4.0);
-                break;
-            }
-            case PRINCIPAL16:
-            {
-                freq *= (8.0/16.0);
-                break;
-            }
-        }
-        fUI->setParamValue("freq", freq);
+        if (midiNoteNumber < 32)
+            midiNoteNumber = 32;
+        if (midiNoteNumber > 96)
+            midiNoteNumber = 96;
+        
+        fUI->setParamValue("MIDI Note", midiNoteNumber);
     }
     
     void setGain(float gain)
     {
-        fUI->setParamValue("gain", gain);
+        fUI->setParamValue("Gain", gain);
     }
 
     void setGate(bool gate)
