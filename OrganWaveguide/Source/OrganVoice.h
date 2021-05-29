@@ -31,37 +31,42 @@ class leakySmooth
 {
 public:
     leakySmooth(){}
-    void setSmooth(float sampleRate, float tau)
+    void setSmooth(float sampleRate, float attackTime, float releaseTime)
     {
-        l =0.0001;
+        tauAttack = 1.f - std::exp(-1/(attackTime*sampleRate));
+        tauRelease = 1.f - std::exp(-1/(attackTime*sampleRate));
     }
     float smooth()
     {
-        if (env < 0.99 && envOn)
+        tau = attack ? tauAttack : tauRelease;
+        if (attack)
         {
-        env += (1 - env)*l;
+            env += (1.f - env)*tau;
         }
         else
         {
-            env = 1;
-            envOn = false;
+            env += -env*tau;
         }
         return env;
     }
     
     void trigger(bool trig)
     {
-        if (trig)
+        if (attack && !trig)
         {
-            env = 0;
-            envOn = trig;
+            attack = 0;
+        }
+        if (!attack && trig)
+        {
+            attack = 1;
         }
     }
     
 private:
     bool envOn;
-    float l;
+    float tauAttack, tauRelease, tau;
     float env;
+    bool attack = 0;
 };
 
 class OrganVoice : public SynthesiserVoice
@@ -76,8 +81,8 @@ public:
         fUI->setParamValue("Jet Offset", 0);
         fUI->setParamValue("Mix", 0.75);
         voiceRank = PRINCIPAL8;
-        env.setSmooth(getSampleRate(), 0.001);
-        
+        env.setSmooth(getSampleRate(), 0.0001, 1);
+        tailLength = 0.f;
     }
     
     // Constructor for given rank
@@ -91,7 +96,9 @@ public:
         fUI->setParamValue("Jet Offset", 0);
         fUI->setParamValue("Mix", 0.75);
         voiceRank = newRank;
-        env.setSmooth(getSampleRate(), 0.001);
+        env.setSmooth(getSampleRate(), 0.0001, 1);
+        fs = getSampleRate();
+        oneOverFs = 1.f/fs;
     }
     
     ~OrganVoice(){
@@ -106,24 +113,40 @@ public:
     
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound * sound, int currentPitchWheelPosition)
     {
+        if (setMidi(midiNoteNumber))
+        {
         // std::cout << midiNoteNumber << std::endl;
         level = velocity;
         // std::cout << freq << std::endl;
         gate = true;
-        setMidi(midiNoteNumber);
+        freq = std::pow(2.f, 0.08333*(midiNoteNumber - 69.f))*440;
         setGain(level*0.5);
         setGate(1);
         env.trigger(true);
+        tailLength = 0;
+        }
     }
     
     void stopNote(float velocity, bool allowTailOff)
     {
-            clearCurrentNote();
+        // Turn off note and allow to tail off
         
+        if (allowTailOff)
+        {
+            tailLength = 0.1*fs; //10*fs/freq;
             gate = false;
             setGate(0);
             env.trigger(false);
-        fDSP->instanceClear();
+        }
+        else
+        {
+            gate = false;
+            env.trigger(false);
+            setGate(0);
+            fDSP->instanceClear();
+            clearCurrentNote();
+        }
+            
     }
     
     void pitchWheelMoved(int newPitchWheelValue)
@@ -149,20 +172,34 @@ public:
         //std::cout << gate << std::endl;
         fDSP->compute(numSamples, NULL, outputs);
         
-        for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
-        {
+        
             
             for(int samp = 0; samp < numSamples; ++samp)
             {
                 //*outputBuffer.getWritePointer(channel,samp) = outputs[channel][samp];
-                float envVal =env.smooth();
-                outputBuffer.addSample(channel, samp, envVal*stopGain*outputs[channel][samp]);
-                ++startSample;
+                float envVal = env.smooth();
+                for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+                {
+                    outputBuffer.addSample(channel, samp + startSample ,stopGain*outputs[channel][samp]);
+                }
+                if ( tailLength > 0)
+                {
+                    tailLength--;
+                }
             }
+        for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+        {
             // Delete that channel (risky?)
             delete [] outputs[channel];
         }
         delete [] outputs; // Clear our memory
+        
+        if (tailLength < 0)
+        {
+            tailLength = 0;
+            fDSP->instanceClear();
+            clearCurrentNote();
+        }
         
     }
     void setStopGain(float newStopGain){
@@ -170,7 +207,7 @@ public:
     }
 private:
     double level;
-    double freq;
+    double freq, fs, oneOverFs;
     float stopGain;
     bool gate;
     // Faust system
@@ -178,15 +215,29 @@ private:
     dsp* fDSP;
     Rank voiceRank;
     leakySmooth env;
+    float tailLength;
     // Required functions
-    void setMidi(int midiNoteNumber)
+    bool setMidi(int midiNoteNumber)
     {
+        switch (voiceRank)
+        {
+            case PRINCIPAL8:
+                break;
+            case PRINCIPAL4:
+                midiNoteNumber += 12;
+                break;
+            case PRINCIPAL16:
+                midiNoteNumber -= 12;
+                break;
+        }
+        
         if (midiNoteNumber < 32)
-            midiNoteNumber = 32;
+            return 0;
         if (midiNoteNumber > 96)
-            midiNoteNumber = 96;
+            return 0;
         
         fUI->setParamValue("MIDI Note", midiNoteNumber);
+        return 1;
     }
     
     void setGain(float gain)

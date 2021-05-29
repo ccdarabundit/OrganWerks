@@ -11,8 +11,8 @@
 #include <JuceHeader.h>
 #include "OrganSound.h"
 #include "OrganVoice.h"
-#define NUM_RANKS 1
-#define NUM_VOICES 12
+#define NUM_RANKS 3
+#define NUM_VOICES 24
 //==============================================================================
 /**
 */

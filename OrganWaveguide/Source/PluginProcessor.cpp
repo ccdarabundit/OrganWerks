@@ -31,8 +31,8 @@ OrganWaveguideAudioProcessor::OrganWaveguideAudioProcessor()
         for (int nVoices = 0; nVoices < NUM_VOICES; nVoices++)
         {
             Organ[0].addVoice(new OrganVoice(PRINCIPAL8));
-//            Organ[1].addVoice(new OrganVoice(PRINCIPAL4));
-//            Organ[2].addVoice(new OrganVoice(PRINCIPAL16));
+            Organ[1].addVoice(new OrganVoice(PRINCIPAL4));
+            Organ[2].addVoice(new OrganVoice(PRINCIPAL16));
         }
     
     for (int nRanks = 0; nRanks < NUM_RANKS; nRanks++)
