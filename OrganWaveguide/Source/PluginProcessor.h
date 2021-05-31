@@ -11,18 +11,21 @@
 #include <JuceHeader.h>
 #include "OrganSound.h"
 #include "OrganVoice.h"
-#define NUM_RANKS 3
-#define NUM_VOICES 24
+#define NUM_RANKS 18
+#define NUM_VOICES 12
+#define NUM_FAMS 1
+
 //==============================================================================
 /**
 */
-class OrganWaveguideAudioProcessor  : public juce::AudioProcessor
+class OrganWaveguideAudioProcessor  : public foleys::MagicProcessor, private juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
     OrganWaveguideAudioProcessor();
     ~OrganWaveguideAudioProcessor() override;
-
+    
+    
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
@@ -55,6 +58,7 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    void parameterChanged (const juce::String& param, float value) override;
     void setStopGain(float newGain, int index);
     void keyOn(int pitch);
     void keyOff(int pitch);
@@ -62,7 +66,17 @@ private:
     Synthesiser Organ[NUM_RANKS];
     OrganVoice* myVoice;
     double stopGains[NUM_RANKS];
+    bool voiceOn[NUM_RANKS];
     double lastSampleRate;
+    
+    // PGM
+    juce::AudioProcessorValueTreeState treeState;
+    juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
+    foleys::MagicProcessorState magicState { *this };
+    
+    // Listener values?
+    static juce::String principalID;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (OrganWaveguideAudioProcessor)
 };

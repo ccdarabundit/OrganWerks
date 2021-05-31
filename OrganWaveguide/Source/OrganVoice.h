@@ -12,18 +12,35 @@
 #include <JuceHeader.h>
 #include "OrganSound.h"
 #include "lossyPipeEngine.h"
-#include "pipeEngine.h"
 
 // Adding in Faust
-class dsp;
+class lossyPipeEngine;
 class MapUI;
 using namespace juce;
 
 enum Rank
 {
+    // Principal
     PRINCIPAL8 = 0,
+    PRINCIPAL16,
+    PRINCIPAL513,
     PRINCIPAL4,
-    PRINCIPAL16
+    PRINCIPAL223,
+    PRINCIPAL2,
+    // Flutes
+    FLUTE8,
+    FLUTE16,
+    FLUTE513,
+    FLUTE4,
+    FLUTE223,
+    FLUTE2,
+    // Violin
+    VIOLIN8,
+    VIOLIN16,
+    VIOLIN513,
+    VIOLIN4,
+    VIOLIN223,
+    VIOLIN2
 };
 
 // Smoothing factor for gate
@@ -83,6 +100,7 @@ public:
         voiceRank = PRINCIPAL8;
         env.setSmooth(getSampleRate(), 0.0001, 1);
         tailLength = 0.f;
+        fDSP->instanceClear();
     }
     
     // Constructor for given rank
@@ -99,6 +117,7 @@ public:
         env.setSmooth(getSampleRate(), 0.0001, 1);
         fs = getSampleRate();
         oneOverFs = 1.f/fs;
+        fDSP->instanceClear();
     }
     
     ~OrganVoice(){
@@ -120,7 +139,7 @@ public:
         // std::cout << freq << std::endl;
         gate = true;
         freq = std::pow(2.f, 0.08333*(midiNoteNumber - 69.f))*440;
-        setGain(level*0.5);
+        setGain(level);
         setGate(1);
         env.trigger(true);
         tailLength = 0;
@@ -212,22 +231,49 @@ private:
     bool gate;
     // Faust system
     MapUI* fUI;
-    dsp* fDSP;
+    lossyPipeEngine* fDSP;
     Rank voiceRank;
     leakySmooth env;
     float tailLength;
+    static double principalDelay[65];
+    static double principalCoefs[65][5];
+    static double fluteDelay[65];
+    static double fluteCoefs[65][5];
+    static double violinDelay[65];
+    static double violinCoefs[65][5];
     // Required functions
     bool setMidi(int midiNoteNumber)
     {
         switch (voiceRank)
         {
             case PRINCIPAL8:
+            case FLUTE8:
+            case VIOLIN8:
                 break;
             case PRINCIPAL4:
+            case FLUTE4:
+            case VIOLIN4:
                 midiNoteNumber += 12;
                 break;
             case PRINCIPAL16:
+            case FLUTE16:
+            case VIOLIN16:
                 midiNoteNumber -= 12;
+                break;
+            case PRINCIPAL513:
+            case FLUTE513:
+            case VIOLIN513:
+                midiNoteNumber += 7;
+                break;
+            case PRINCIPAL223:
+            case FLUTE223:
+            case VIOLIN223:
+                midiNoteNumber += 19;
+                break;
+            case PRINCIPAL2:
+            case FLUTE2:
+            case VIOLIN2:
+                midiNoteNumber += 24;
                 break;
         }
         
@@ -237,6 +283,7 @@ private:
             return 0;
         
         fUI->setParamValue("MIDI Note", midiNoteNumber);
+        selectPipe(midiNoteNumber);
         return 1;
     }
     
@@ -255,4 +302,34 @@ private:
         }
     }
     
+    void selectPipe(int midiNoteNumber)
+    {
+        int mInd = midiNoteNumber - 32;
+        float b0, b1, b2, a1, a2, delay;
+        if (voiceRank >= PRINCIPAL8 && voiceRank <= PRINCIPAL2)
+        {
+            b0 = principalCoefs[mInd][0]; b1 = principalCoefs[mInd][1]; b2 = principalCoefs[mInd][2];
+            a1 = principalCoefs[mInd][3]; a2 = principalCoefs[mInd][4];
+            delay = principalDelay[mInd];
+        }
+        else if (voiceRank >= FLUTE8 && voiceRank <= FLUTE2)
+        {
+            b0 = fluteCoefs[mInd][0]; b1 = fluteCoefs[mInd][1]; b2 = fluteCoefs[mInd][2];
+            a1 = fluteCoefs[mInd][3]; a2 = fluteCoefs[mInd][4];
+            delay = fluteDelay[mInd];
+        }
+        else if (voiceRank >= VIOLIN8 && voiceRank <= VIOLIN2)
+        {
+            b0 = violinCoefs[mInd][0]; b1 = violinCoefs[mInd][1]; b2 = violinCoefs[mInd][2];
+            a1 = violinCoefs[mInd][3]; a2 = violinCoefs[mInd][4];
+            delay = violinDelay[mInd];
+        }
+        
+        fUI->setParamValue("b0", b0);
+        fUI->setParamValue("b1", b1);
+        fUI->setParamValue("b2", b2);
+        fUI->setParamValue("a1", a1);
+        fUI->setParamValue("a2", a2);
+        fUI->setParamValue("Group Delay", delay);
+    }
 };
