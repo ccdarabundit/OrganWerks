@@ -11,9 +11,13 @@
 #include <JuceHeader.h>
 #include "OrganSound.h"
 #include "OrganVoice.h"
+#include "declicker.h"
+#include "GUI/organLAF.h"
+#include "BinaryData.h" 
 #define NUM_RANKS 18
 #define NUM_VOICES 12
 #define NUM_FAMS 1
+#define FOLEYS_SHOW_GUI_EDITOR_PALLETTE=0
 
 //==============================================================================
 /**
@@ -60,6 +64,8 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
     void parameterChanged (const juce::String& param, float value) override;
     void setStopGain(float newGain, int index);
+    void setEnvelopeAttack(float newAttack);
+    void setOutputGain(float newOutputGain);
     void keyOn(int pitch);
     void keyOff(int pitch);
 private:
@@ -68,12 +74,12 @@ private:
     double stopGains[NUM_RANKS];
     bool voiceOn[NUM_RANKS];
     double lastSampleRate;
-    
+    float outputGain;
     // PGM
     juce::AudioProcessorValueTreeState treeState;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     foleys::MagicProcessorState magicState { *this };
-    
+    declicker<float> gainDeclick;
     // Listener values?
     static juce::String principalID;
     

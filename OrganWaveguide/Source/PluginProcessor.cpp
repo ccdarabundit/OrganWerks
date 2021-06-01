@@ -9,7 +9,11 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-
+namespace parameterIDs
+    {
+        static String attack ("Attack");
+    static String outgain ("Output Gain");
+    }
 namespace principalIDs
     {
     static String eight ( "P8'");
@@ -40,6 +44,11 @@ namespace violinIDs {
 juce::AudioProcessorValueTreeState::ParameterLayout OrganWaveguideAudioProcessor::createParameterLayout()
 {
         juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    // OTHER
+    auto group = std::make_unique<juce::AudioProcessorParameterGroup>("parameters", "Parameters", "|");
+    group->addChild(std::make_unique<juce::AudioParameterFloat>(parameterIDs::attack,  "Attack",  juce::NormalisableRange<float>(0.0001f, 0.5f, 0.0001f), 0.05f));
+    group->addChild(std::make_unique<juce::AudioParameterFloat>(parameterIDs::outgain,  "Output Gain",  juce::NormalisableRange<float>(0.0f, 1.0f, 0.01f), 0.5f));
+    // RANKS
     auto pGroup = std::make_unique<juce::AudioProcessorParameterGroup>("principal", "Principal", "|");
         pGroup->addChild(std::make_unique<juce::AudioParameterFloat>(principalIDs::eight,  "8'",  juce::NormalisableRange<float>(0.000f, 1.0f, 0.01f), 0.0f));
         pGroup->addChild(std::make_unique<juce::AudioParameterFloat>(principalIDs::sixt,  "16'",  juce::NormalisableRange<float>(0.000f, 1.0f, 0.01f), 0.0f));
@@ -64,7 +73,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrganWaveguideAudioProcessor
     vGroup->addChild(std::make_unique<juce::AudioParameterFloat>(violinIDs::fivethree,  "5-1/3'",  juce::NormalisableRange<float>(0.000f, 1.0f, 0.01f), 0.0f));
     vGroup->addChild(std::make_unique<juce::AudioParameterFloat>(violinIDs::two,  "2'",  juce::NormalisableRange<float>(0.000f, 1.0f, 0.01f), 0.0f));
     
-    layout.add (std::move(pGroup), std::move(fGroup), std::move(vGroup));
+    layout.add (std::move(group), std::move(pGroup), std::move(fGroup), std::move(vGroup));
                         
     return layout;
 }
@@ -85,7 +94,8 @@ OrganWaveguideAudioProcessor::OrganWaveguideAudioProcessor()
                ProjectInfo::projectName,
                createParameterLayout())
 {
-    magicState.setGuiValueTree (BinaryData::OrganGUI, BinaryData::OrganGUISize);
+    outputGain = 0.5;
+    
     
     treeState.addParameterListener(principalIDs::eight, this);
     treeState.addParameterListener(principalIDs::sixt, this);
@@ -107,6 +117,10 @@ OrganWaveguideAudioProcessor::OrganWaveguideAudioProcessor()
     treeState.addParameterListener(violinIDs::twothree, this);
     treeState.addParameterListener(violinIDs::fivethree, this);
     treeState.addParameterListener(violinIDs::two, this);
+    treeState.addParameterListener(parameterIDs::attack, this);
+    treeState.addParameterListener(parameterIDs::outgain, this);
+    
+    magicState.setGuiValueTree (BinaryData::OrganGUI_xml, BinaryData::OrganGUI_xmlSize);
     // Organ Initialization
     for (int nRanks = 0; nRanks < NUM_RANKS; nRanks++)
     {
@@ -230,6 +244,8 @@ void OrganWaveguideAudioProcessor::prepareToPlay (double sampleRate, int samples
     {
         Organ[nRanks].setCurrentPlaybackSampleRate(lastSampleRate);
     }
+    gainDeclick.initSampleRate(sampleRate);
+    gainDeclick.setTarget(outputGain);
 }
 
 void OrganWaveguideAudioProcessor::releaseResources()
@@ -288,22 +304,13 @@ void OrganWaveguideAudioProcessor::processBlock (juce::AudioBuffer<float>& buffe
     // interleaved by keeping the same state.
     for (int nRanks = 0; nRanks < NUM_RANKS; nRanks++)
     {
-        if (stopGains[nRanks] < 0.001)
-        {} // don't process
-        else{
         Organ[nRanks].renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-        }
     }
     
     float scale = 1.0/NUM_RANKS;
     buffer.applyGain(scale);
-    
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-
-        // ..do something to the data...
-    }
+    outputGain = gainDeclick.declick();
+    buffer.applyGain(outputGain);
 }
 
 //==============================================================================
@@ -316,12 +323,9 @@ juce::AudioProcessorEditor* OrganWaveguideAudioProcessor::createEditor()
 {
     auto builder = std::make_unique<foleys::MagicGUIBuilder>(magicState);
     builder->registerJUCEFactories();
-    return new foleys::MagicPluginEditor (magicState,
-           // The following two lines work IF you have a COMPATIBLE ../Resources/SawSynthPGM.xml
-//                                         BinaryData::OrganSynth,
-//                                        BinaryData::OrganSynthSize,
-                                          // If they are missing or incompatible, comment them out.
-                                          std::move (builder));
+    builder->registerLookAndFeel("OrganLAF", std::make_unique<organLAF>());
+    auto editor = new foleys::MagicPluginEditor (magicState, std::move (builder));
+    return editor;
 }
 
 //==============================================================================
@@ -372,6 +376,25 @@ void OrganWaveguideAudioProcessor::parameterChanged (const juce::String& param, 
         setStopGain(value, VIOLIN513);
     else if (param == violinIDs::two)
         setStopGain(value, VIOLIN2);
+    
+    if (param == parameterIDs::attack)
+        setEnvelopeAttack(value);
+    else if (param == parameterIDs::outgain)
+        setOutputGain(value);
+}
+void OrganWaveguideAudioProcessor::setEnvelopeAttack(float newAttack)
+{
+    for (int nRank = 0; nRank < NUM_RANKS; nRank++){
+    for (int nVoice = 0; nVoice < NUM_VOICES; nVoice++)
+    {
+        dynamic_cast<OrganVoice *>(Organ[nRank].getVoice(nVoice))->setAttack(newAttack);
+    }
+    }
+}
+
+void OrganWaveguideAudioProcessor::setOutputGain(float newOutputGain)
+{
+    gainDeclick.setTarget(newOutputGain*(0.25*NUM_RANKS));
 }
 void OrganWaveguideAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {

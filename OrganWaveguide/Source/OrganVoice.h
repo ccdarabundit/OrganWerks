@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include "OrganSound.h"
+#include "declicker.h"
 #include "lossyPipeEngine.h"
 
 // Adding in Faust
@@ -118,6 +119,7 @@ public:
         fs = getSampleRate();
         oneOverFs = 1.f/fs;
         fDSP->instanceClear();
+        stopGainDeclick.initSampleRate(getSampleRate());
     }
     
     ~OrganVoice(){
@@ -180,6 +182,10 @@ public:
     
     void renderNextBlock (AudioBuffer<float> & outputBuffer, int startSample, int numSamples)
     {
+        if (onFlag)
+        {}
+        else
+        {
         // Allocate temporary output for faust
         int nChannels = outputBuffer.getNumChannels();
         float **outputs = new float*[nChannels];
@@ -190,17 +196,11 @@ public:
         
         //std::cout << gate << std::endl;
         fDSP->compute(numSamples, NULL, outputs);
-        
-        
-            
+            float stopGain = stopGainDeclick.declick();
+            outputBuffer.addFrom(0, startSample, &outputs[0][0], numSamples, stopGain);
+            outputBuffer.addFrom(1, startSample, &outputs[1][0], numSamples, stopGain);
             for(int samp = 0; samp < numSamples; ++samp)
             {
-                //*outputBuffer.getWritePointer(channel,samp) = outputs[channel][samp];
-                float envVal = env.smooth();
-                for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
-                {
-                    outputBuffer.addSample(channel, samp + startSample ,stopGain*outputs[channel][samp]);
-                }
                 if ( tailLength > 0)
                 {
                     tailLength--;
@@ -219,15 +219,21 @@ public:
             fDSP->instanceClear();
             clearCurrentNote();
         }
-        
+        }
     }
     void setStopGain(float newStopGain){
-        stopGain = newStopGain;
+        if (newStopGain == 0)
+            onFlag = false;
+        stopGainDeclick.setTarget(newStopGain);
+    }
+    
+    void setAttack(float newAttack){
+        fUI->setParamValue("Attack", newAttack);
     }
 private:
     double level;
     double freq, fs, oneOverFs;
-    float stopGain;
+    bool onFlag;
     bool gate;
     // Faust system
     MapUI* fUI;
@@ -241,6 +247,7 @@ private:
     static double fluteCoefs[65][5];
     static double violinDelay[65];
     static double violinCoefs[65][5];
+    declicker<float> stopGainDeclick;
     // Required functions
     bool setMidi(int midiNoteNumber)
     {
