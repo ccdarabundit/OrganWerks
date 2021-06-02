@@ -18,7 +18,7 @@ namespace BinaryData
     const int            SarabunRegular_ttfSize = 83016;
 
     extern const char*   OrganGUI_xml;
-    const int            OrganGUI_xmlSize = 12531;
+    const int            OrganGUI_xmlSize = 12845;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
     const int namedResourceListSize = 4;

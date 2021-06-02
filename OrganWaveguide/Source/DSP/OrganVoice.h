@@ -1,12 +1,12 @@
 /*
-  ==============================================================================
-
-    OrganVoice.h
-    Created: 27 Apr 2021 5:51:38pm
-    Author:  Champ Darabundit
-
-  ==============================================================================
-*/
+ ==============================================================================
+ 
+ OrganVoice.h
+ Created: 27 Apr 2021 5:51:38pm
+ Author:  Champ Darabundit
+ 
+ ==============================================================================
+ */
 
 #pragma once
 #include <JuceHeader.h>
@@ -19,6 +19,7 @@ class lossyPipeEngine;
 class MapUI;
 using namespace juce;
 
+// Our available ranks
 enum Rank
 {
     // Principal
@@ -44,88 +45,51 @@ enum Rank
     VIOLIN2
 };
 
-// Smoothing factor for gate
-class leakySmooth
-{
-public:
-    leakySmooth(){}
-    void setSmooth(float sampleRate, float attackTime, float releaseTime)
-    {
-        tauAttack = 1.f - std::exp(-1/(attackTime*sampleRate));
-        tauRelease = 1.f - std::exp(-1/(attackTime*sampleRate));
-    }
-    float smooth()
-    {
-        tau = attack ? tauAttack : tauRelease;
-        if (attack)
-        {
-            env += (1.f - env)*tau;
-        }
-        else
-        {
-            env += -env*tau;
-        }
-        return env;
-    }
-    
-    void trigger(bool trig)
-    {
-        if (attack && !trig)
-        {
-            attack = 0;
-        }
-        if (!attack && trig)
-        {
-            attack = 1;
-        }
-    }
-    
-private:
-    bool envOn;
-    float tauAttack, tauRelease, tau;
-    float env;
-    bool attack = 0;
-};
-
 class OrganVoice : public SynthesiserVoice
 {
 public:
     OrganVoice(){
+        // Build Faust
         fDSP = new lossyPipeEngine();
         fDSP->init(getSampleRate());
         fUI = new MapUI();
         fDSP->buildUserInterface(fUI);
-        // Set the constant parameters (not varying now)
+        // Set constant UIs
         fUI->setParamValue("Jet Offset", 0);
         fUI->setParamValue("Mix", 0.75);
+        // Default constructor is a 8' Principal
         voiceRank = PRINCIPAL8;
-        env.setSmooth(getSampleRate(), 0.0001, 1);
-        tailLength = 0.f;
+        fs = getSampleRate();
+        oneOverFs = 1.f/fs;
         fDSP->instanceClear();
+        stopGain.initSampleRate(getSampleRate());
     }
     
     // Constructor for given rank
     OrganVoice(Rank newRank)
     {
+        // Build Faust
         fDSP = new lossyPipeEngine();
         fDSP->init(getSampleRate());
         fUI = new MapUI();
         fDSP->buildUserInterface(fUI);
-        // Set the constant parameters (not varying now)
+        // Set constant UIs
         fUI->setParamValue("Jet Offset", 0);
         fUI->setParamValue("Mix", 0.75);
+        // Set Rank
         voiceRank = newRank;
-        env.setSmooth(getSampleRate(), 0.0001, 1);
         fs = getSampleRate();
         oneOverFs = 1.f/fs;
         fDSP->instanceClear();
-        stopGainDeclick.initSampleRate(getSampleRate());
+        stopGain.initSampleRate(getSampleRate());
     }
     
-    ~OrganVoice(){
-        delete fDSP;
+    ~OrganVoice()
+    {
+        delete fDSP;    // Dump Faust
         delete fUI;
     }
+
     bool canPlaySound(SynthesiserSound* sound)
     {
         // Check if can cast to our synth sound class
@@ -134,71 +98,67 @@ public:
     
     void startNote(int midiNoteNumber, float velocity, SynthesiserSound * sound, int currentPitchWheelPosition)
     {
+        // Check we have a viable midi number
+        // If not no sound
         if (setMidi(midiNoteNumber))
         {
-        // std::cout << midiNoteNumber << std::endl;
-        level = velocity;
-        // std::cout << freq << std::endl;
-        gate = true;
-        freq = std::pow(2.f, 0.08333*(midiNoteNumber - 69.f))*440;
-        setGain(level);
-        setGate(1);
-        env.trigger(true);
-        tailLength = 0;
+            // Set gain based on velocity
+            setGain(velocity);
+            setGate(1);
+            // Clear tail length
+            tailLength = 0;
         }
     }
     
     void stopNote(float velocity, bool allowTailOff)
     {
         // Turn off note and allow to tail off
-        
         if (allowTailOff)
         {
-            tailLength = 0.1*fs; //10*fs/freq;
-            gate = false;
+            tailLength = 0.1*fs; // static tail length 100ms
             setGate(0);
-            env.trigger(false);
         }
         else
         {
-            gate = false;
-            env.trigger(false);
             setGate(0);
             fDSP->instanceClear();
             clearCurrentNote();
         }
-            
+        
     }
     
     void pitchWheelMoved(int newPitchWheelValue)
     {
-        level = 0;
+
     }
     
     void controllerMoved(int controllerNumber, int newControllerValue)
     {
-        
+  
     }
     
     void renderNextBlock (AudioBuffer<float> & outputBuffer, int startSample, int numSamples)
     {
-        if (onFlag)
-        {}
+        if (offFlag) {} 
         else
         {
-        // Allocate temporary output for faust
-        int nChannels = outputBuffer.getNumChannels();
-        float **outputs = new float*[nChannels];
-        
-        for (int channel = 0; channel < nChannels; ++channel){
-            outputs[channel] = new float[numSamples];
-        }
-        
-        //std::cout << gate << std::endl;
-        fDSP->compute(numSamples, NULL, outputs);
-            float stopGain = stopGainDeclick.declick();
-            outputBuffer.addFrom(0, startSample, &outputs[0][0], numSamples, stopGain);
-            outputBuffer.addFrom(1, startSample, &outputs[1][0], numSamples, stopGain);
+            // Allocate temporary output for Faust
+            int nChannels = outputBuffer.getNumChannels();
+            float **outputs = new float*[nChannels];
+            
+            for (int channel = 0; channel < nChannels; ++channel){
+                outputs[channel] = new float[numSamples];
+            }
+            
+            // Call Faust 
+            fDSP->compute(numSamples, NULL, outputs);
+
+            // Update stopGain and accumulate Faust output to buffer
+            float gain = stopGain.declick();
+            outputBuffer.addFrom(0, startSample, &outputs[0][0], numSamples, gain);
+            outputBuffer.addFrom(1, startSample, &outputs[1][0], numSamples, gain);
+
+            // Sample decrementing for tailing off
             for(int samp = 0; samp < numSamples; ++samp)
             {
                 if ( tailLength > 0)
@@ -206,51 +166,59 @@ public:
                     tailLength--;
                 }
             }
-        for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
-        {
-            // Delete that channel (risky?)
-            delete [] outputs[channel];
-        }
-        delete [] outputs; // Clear our memory
-        
-        if (tailLength < 0)
-        {
-            tailLength = 0;
-            fDSP->instanceClear();
-            clearCurrentNote();
-        }
+
+            // Reset if exceeded tailLength
+            if (tailLength < 0)
+            {
+                tailLength = 0;
+                fDSP->instanceClear();
+                clearCurrentNote();
+            }
+
+            // Clear temporary outputs
+            for (int channel = 0; channel < outputBuffer.getNumChannels(); ++channel)
+            {
+                delete [] outputs[channel];
+            }
+            delete [] outputs; 
         }
     }
+
+    // Setters needed in main processor
     void setStopGain(float newStopGain){
         if (newStopGain == 0)
-            onFlag = false;
-        stopGainDeclick.setTarget(newStopGain);
+            offFlag = true;
+        stopGain.setTarget(newStopGain);
     }
     
     void setAttack(float newAttack){
         fUI->setParamValue("Attack", newAttack);
     }
+
 private:
-    double level;
-    double freq, fs, oneOverFs;
-    bool onFlag;
-    bool gate;
     // Faust system
     MapUI* fUI;
     lossyPipeEngine* fDSP;
-    Rank voiceRank;
-    leakySmooth env;
+
+    float fs, oneOverFs;
+    bool offFlag;
     float tailLength;
+    declicker<float> stopGain;
+
+    Rank voiceRank;
+    
+    // Static coefs for different pipe frequencies
     static double principalDelay[65];
     static double principalCoefs[65][5];
     static double fluteDelay[65];
     static double fluteCoefs[65][5];
     static double violinDelay[65];
     static double violinCoefs[65][5];
-    declicker<float> stopGainDeclick;
-    // Required functions
+    
+    // Private functions
     bool setMidi(int midiNoteNumber)
     {
+        // Check rank type and do correct shift
         switch (voiceRank)
         {
             case PRINCIPAL8:
@@ -284,11 +252,13 @@ private:
                 break;
         }
         
+        // If outside available pipes return false
         if (midiNoteNumber < 32)
             return 0;
         if (midiNoteNumber > 96)
             return 0;
         
+        // Set the MIDI note and ready to play
         fUI->setParamValue("MIDI Note", midiNoteNumber);
         selectPipe(midiNoteNumber);
         return 1;
@@ -298,7 +268,7 @@ private:
     {
         fUI->setParamValue("Gain", gain);
     }
-
+    
     void setGate(bool gate)
     {
         if(gate){
@@ -309,6 +279,7 @@ private:
         }
     }
     
+    // Select the correct coef and delay compenstation
     void selectPipe(int midiNoteNumber)
     {
         int mInd = midiNoteNumber - 32;

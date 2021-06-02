@@ -1,6 +1,6 @@
 //
 //  declicker.h
-//  OrganWaveguide
+//  one-pole template for sliders, etc...
 //
 //  Created by Champ Darabundit on 5/31/21.
 //
