@@ -188,6 +188,7 @@ public:
     void setStopGain(float newStopGain){
         if (newStopGain == 0)
             offFlag = true;
+        offFlag = false;
         stopGain.setTarget(newStopGain);
     }
     
@@ -201,7 +202,7 @@ private:
     lossyPipeEngine* fDSP;
 
     float fs, oneOverFs;
-    bool offFlag;
+    bool offFlag = true;
     float tailLength;
     declicker<float> stopGain;
 

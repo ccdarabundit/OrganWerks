@@ -5,16 +5,31 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="WdqYCF" name="OrganWaveguide">
     <GROUP id="{ACCD988A-5BDC-B4FA-8156-2FDE543E1D8B}" name="Source">
+      <GROUP id="{98412C99-596E-7C00-FF24-1B6A8A524935}" name="DSP">
+        <FILE id="dmU4YL" name="declicker.h" compile="0" resource="0" file="Source/DSP/declicker.h"/>
+        <FILE id="yUwaL5" name="lossyPipeCoefs.cpp" compile="1" resource="0"
+              file="Source/DSP/lossyPipeCoefs.cpp"/>
+        <FILE id="SzLA3D" name="lossyPipeEngine.h" compile="0" resource="0"
+              file="Source/DSP/lossyPipeEngine.h"/>
+        <FILE id="XaYHVX" name="OrganSound.h" compile="0" resource="0" file="Source/DSP/OrganSound.h"/>
+        <FILE id="mWIFcx" name="OrganVoice.h" compile="0" resource="0" file="Source/DSP/OrganVoice.h"/>
+      </GROUP>
+      <GROUP id="{9E19F466-B7B9-0A22-2E2B-9B09C5E35D32}" name="GUI">
+        <GROUP id="{8A0B25AA-1DF5-B879-494E-A8BCA6B8B67D}" name="Assets">
+          <FILE id="xsMakT" name="knob_white.svg" compile="0" resource="1" file="Source/GUI/Assets/knob_white.svg"/>
+          <FILE id="wWk8oU" name="Sarabun-Light.ttf" compile="0" resource="1"
+                file="Source/GUI/Assets/Sarabun-Light.ttf"/>
+          <FILE id="xCftDt" name="Sarabun-Regular.ttf" compile="0" resource="1"
+                file="Source/GUI/Assets/Sarabun-Regular.ttf"/>
+        </GROUP>
+        <FILE id="b1Yv1n" name="OrganGUI.xml" compile="0" resource="1" file="Source/GUI/OrganGUI.xml"/>
+        <FILE id="mcmCIg" name="organLAF.cpp" compile="1" resource="0" file="Source/GUI/organLAF.cpp"/>
+        <FILE id="x9zTwO" name="organLAF.h" compile="0" resource="0" file="Source/GUI/organLAF.h"/>
+      </GROUP>
       <FILE id="Fy67Pv" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
       <FILE id="LGMv2q" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="wefh8L" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="Yyxr1N" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="Gmso9I" name="pipeEngine.h" compile="0" resource="0" file="Source/pipeEngine.h"/>
-      <FILE id="QHqZzI" name="OrganSound.h" compile="0" resource="0" file="Source/OrganSound.h"/>
-      <FILE id="il9j4T" name="OrganVoice.h" compile="0" resource="0" file="Source/OrganVoice.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
@@ -37,10 +52,14 @@
         <MODULEPATH id="juce_graphics" path="../../../../../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_basics" path="../../../../../../../../Applications/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="foleys_gui_magic" path="../../../../../../Documents/CCRMA"/>
+        <MODULEPATH id="juce_dsp" path="../../../../../../../../Applications/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
+    <MODULE id="foleys_gui_magic" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -49,7 +68,9 @@
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
