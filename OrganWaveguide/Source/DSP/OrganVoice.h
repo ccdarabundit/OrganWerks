@@ -115,7 +115,7 @@ public:
         // Turn off note and allow to tail off
         if (allowTailOff)
         {
-            tailLength = 0.1*fs; // static tail length 100ms
+            tailLength = 0.05*fs; // static tail length 100ms
             setGate(0);
         }
         else
@@ -159,12 +159,9 @@ public:
             outputBuffer.addFrom(1, startSample, &outputs[1][0], numSamples, gain);
 
             // Sample decrementing for tailing off
-            for(int samp = 0; samp < numSamples; ++samp)
+            if ( tailLength > 0)
             {
-                if ( tailLength > 0)
-                {
-                    tailLength--;
-                }
+                    tailLength-= numSamples;
             }
 
             // Reset if exceeded tailLength

@@ -2,7 +2,9 @@
 
 <JUCERPROJECT id="dO7vLu" name="OrganWaveguide" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginManufacturer="Champion Sound Systems" pluginManufacturerCode="Cham"
+              aaxIdentifier="com.champsoundsystems.organwaveguide">
   <MAINGROUP id="WdqYCF" name="OrganWaveguide">
     <GROUP id="{ACCD988A-5BDC-B4FA-8156-2FDE543E1D8B}" name="Source">
       <GROUP id="{98412C99-596E-7C00-FF24-1B6A8A524935}" name="DSP">
