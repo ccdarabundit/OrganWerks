@@ -9,15 +9,13 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "OrganSound.h"
-#include "OrganVoice.h"
-#include "declicker.h"
+#include "DSP/OrganSound.h"
+#include "DSP/OrganVoice.h"
+#include "DSP/declicker.h"
 #include "GUI/organLAF.h"
-#include "BinaryData.h" 
 #define NUM_RANKS 18
 #define NUM_VOICES 12
 #define NUM_FAMS 1
-#define FOLEYS_SHOW_GUI_EDITOR_PALLETTE=0
 
 //==============================================================================
 /**
