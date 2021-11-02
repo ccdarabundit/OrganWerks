@@ -1,0 +1,9 @@
+.DS_Store
+
+sdk/faust
+sdk/foleys_gui_magic
+sdk/JUCE
+
+_deps
+
+build
