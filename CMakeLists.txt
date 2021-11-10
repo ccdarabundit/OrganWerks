@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(WaveOrgan VERSION 0.9)
+project(OrganWerks)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "-std=c++0x")
@@ -13,7 +13,7 @@ if(CPM_SOURCE_CACHE)
 elseif(DEFINED ENV{CPM_SOURCE_CACHE})
   set(CPM_DOWNLOAD_LOCATION "$ENV{CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
 else()
-  set(CPM_DOWNLOAD_LOCATION "CMake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
+  set(CPM_DOWNLOAD_LOCATION "CMake/CPM.cmake")
 endif()
 
 if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
@@ -24,38 +24,12 @@ if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
   )
 endif()
 
-include(${CPM_DOWNLOAD_LOCATION})
+include(${CPM_DOWNLOAD_LOCATION})           # Import CPM
+include(CMake/faustbuild.cmake)             # Import Faust building function
+include(CMake/FindDependencies.cmake)       # Add all dependencies
 
+# set_property(GLOBAL PROPERTY USE_FOLDERS YES)
 
-set_property(GLOBAL PROPERTY USE_FOLDERS YES)
-option(JUCE_ENABLE_MODULE_SOURCE_GROUPS "Enable Module Source Groups" ON)
-
-CPMAddPackage(
-        NAME JUCE
-        GITHUB_REPOSITORY juce-framework/JUCE
-        GIT_TAG origin/develop
-        SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/sdk/JUCE)
-
-CPMAddPackage(
-        NAME FoleysGUIMagic
-        GITHUB_REPOSITORY ffAudio/foleys_gui_magic
-        GIT_TAG origin/develop
-        SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/sdk/foleys_gui_magic)
-
-CPMAddPackage(
-        NAME Faust
-        GITHUB_REPOSITORY grame-cncm/faust
-        GIT_TAG origin/master-dev
-        SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/sdk/faust)
-
-
-add_subdirectory(sdk)
-
-juce_add_modules(sdk/foleys_gui_magic)
-
+# Add our two subdirectories
 add_subdirectory(src)
 add_subdirectory(res)
-
-
-
-

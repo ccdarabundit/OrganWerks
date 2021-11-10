@@ -1,51 +1,96 @@
-cmake_minimum_required(VERSION 3.15)
+project(WaveOrgan VERSION 0.0.1)
 
-set(TEST_FILE "log.txt")
+# Set your plugin variables here
+set(COMPANY_NAME "Champion Sound Systems")
+set (PRODUCT_NAME "Wave Organ")
 
-# add_custom_command does not create a new target. You have to define targets explicitly
-# by add_executable, add_library or add_custom_target in order to make them visible to make
-add_custom_command(OUTPUT ${TEST_FILE}
-    COMMAND touch ${TEST_FILE}
+# Target for the plugin
+set (BASE_TARGET "${PROJECT_NAME}")
 
-    # Display the given message before the commands are executed at build time
-    COMMENT "Creating ${TEST_FILE}"
+##############################
+# INITIALIZE JUCE MODULES
+##############################
+
+add_library(juce_plugin_modules STATIC)
+# Add juce modules
+target_link_libraries(juce_plugin_modules
+    PRIVATE
+        BinaryData # Don't add me unless you have binary data!
+        juce::juce_audio_utils
+        foleys_gui_magic
+    PUBLIC
+        juce::juce_recommended_config_flags
+        juce::juce_recommended_lto_flags
 )
 
-# target zoo is always built
-add_custom_target(zoo ALL
-    COMMAND echo "This is ALL target 'zoo', and it depends on ${TEST_FILE}"
-    # If the file exists, then commands related to that file won't be executed
-    # DONOT let other target depends on the same OUTPUT as current target,
-    #   or it may be bad when doing parallel make
-    DEPENDS ${TEST_FILE}
-
-    # to make quotes printable,for example
-    VERBATIM
+# Plugin compile settings like you would in Projucer
+target_compile_definitions(juce_plugin_modules
+    PUBLIC
+        JUCE_DISPLAY_SPLASH_SCREEN=0
+        JUCE_REPORT_APP_USAGE=0
+        JUCE_WEB_BROWSER=0
+        JUCE_USE_CURL=0
+        JUCE_JACK=1
+        JUCE_ALSA=1
+        JucePlugin_Manufacturer="${COMPANY_NAME}"
+        JucePlugin_VersionString="${CMAKE_PROJECT_VERSION}"
+        JucePlugin_Name="${PRODUCT_NAME}"
+        FOLEYS_SHOW_GUI_EDITOR_PALLETTE=1
+        FOLEYS_ENABLE_BINARY_DATA=1
+    INTERFACE
+        $<TARGET_PROPERTY:juce_plugin_modules,COMPILE_DEFINITIONS>
 )
 
+target_include_directories(juce_plugin_modules
+    INTERFACE
+        $<TARGET_PROPERTY:juce_plugin_modules,INCLUDE_DIRECTORIES>
+)
 
-project(WaveOrgan VERSION 0.9)
+set_target_properties(juce_plugin_modules PROPERTIES
+    POSITION_INDEPENDENT_CODE TRUE
+    VISIBILITY_INLINES_HIDDEN TRUE
+    C_VISBILITY_PRESET hidden
+    CXX_VISIBILITY_PRESET hidden
+)
 
-juce_add_plugin(WaveOrgan
-	COMPANY_NAME Champion Sound Systems
-	PLUGIN_MANUFACTURER_CODE CPSS
-	PLUGIN_CODE orgw
-	FORMATS AU VST3 Standalone
-	ProductName "Wave Organ")
+##############################
+# INITIALIZE PLUGIN
+##############################
 
-juce_generate_juce_header(WaveOrgan)
+juce_add_plugin(${BASE_TARGET}
+        COMPANY_NAME "${COMPANY_NAME}"
+        IS_SYNTH TRUE
+        NEEDS_MIDI_INPUT TRUE
+        NEEDS_MIDI_OUTPUT FALSE
+        IS_MIDI_EFFECT FALSE
+        EDITOR_WANTS_KEYBOARD_FOCUS FALSE
+        COPY_PLUGIN_AFTER_BUILD TRUE
+        PLUGIN_MANUFACTURER_CODE Chss
+        PLUGIN_CODE WvOg
+        FORMATS AU VST3 Standalone
+        PRODUCT_NAME "${PRODUCT_NAME}"
+)
 
-target_compile_definitions(WaveOrgan PUBLIC
+juce_generate_juce_header(${BASE_TARGET})
+
+target_compile_definitions(${BASE_TARGET} PUBLIC
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-target_link_libraries(WaveOrgan PRIVATE 
-		juce_plugin_modules)
+# Attach the juce modules to the plugin
+target_link_libraries(${BASE_TARGET} PRIVATE juce_plugin_modules)
 
-target_sources(WaveOrgan PRIVATE
-	WaveOrgan.cpp
+##############################
+# SOURCE FILES
+##############################
 
-	# DSP Includes
+target_sources(${BASE_TARGET} PRIVATE
+    # JUCE FILES
+    WaveOrgan.cpp
+    
+    # Generated Faust Files
+
 )
 
-
+# Add in Faust directory
+add_subdirectory(dsp)

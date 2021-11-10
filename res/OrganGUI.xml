@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<magic>
+  <Styles>
+    <Style name="default">
+      <Nodes/>
+      <Classes>
+        <plot-view border="2" background-color="black" border-color="silver" display="contents"/>
+        <nomargin margin="0" padding="0" border="0"/>
+        <group margin="5" padding="5" border="2" flex-direction="column"/>
+      </Classes>
+      <Types>
+        <Slider border="0" slider-textbox="textbox-below"/>
+        <ToggleButton border="0" max-height="50" caption-size="0" text="Active"/>
+        <TextButton border="0" max-height="50" caption-size="0"/>
+        <ComboBox border="0" max-height="50" caption-size="0"/>
+        <Plot border="0" margin="0" padding="0" background-color="00000000"
+              radius="0"/>
+        <XYDragComponent border="0" margin="0" padding="0" background-color="00000000"
+                         radius="0"/>
+      </Types>
+      <Palettes>
+        <default/>
+      </Palettes>
+    </Style>
+  </Styles>
+  <View flex-direction="column" resizable="0" resize-corner="0" width="1024"
+        height="720" background-color="FF0E0E0E" min-width="1024" min-height="720">
+    <View background-color="000000000" lookAndFeel="OrganLAF" flex-grow="0.2"
+          caption-placement="top-left" margin="0" padding="0" border="0">
+      <Label margin="0" tooltip="0" padding="0" text="Wave Organ " font-size="36"
+             lookAndFeel="OrganLAF" pos-x="0" max-width="350" flex-align-self="stretch"
+             justification="centred" background-color="0000000000"/>
+    </View>
+    <View flex-grow="3" margin="0" background-color="00000000">
+      <View flex-grow="12" background-color="00000000">
+        <View id="Principal" flex-direction="column" padding="0" margin="2"
+              background-color="0000000000">
+          <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
+                lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
+                radius="4" padding="0">
+            <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
+                   text="Principal" editable="0" font-size="20" margin="2" padding="0"
+                   lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
+                   label-text="FFC4C4C4" border="0"/>
+            <View background-color="000000000">
+              <View flex-direction="column" flex-grow="2.5" margin="0" padding="0"
+                    border="0" background-color="0000000000">
+                <Slider parameter="P8'" caption="8'" flex-grow="1.5" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" border="0" margin="0" padding="0"
+                        lookAndFeel="OrganLAF" caption-size="26" slider-thumb="FFC50000"
+                        slider-track="FF898989" background-color="000000000" caption-color="FFC4C4C4"/>
+                <Slider parameter="P16'" caption="16'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-thumb="FF01A326" slider-track="FF898989" border-color=""
+                        background-color="00000000" caption-color="FFC4C4C4"/>
+              </View>
+              <View flex-direction="column" flex-grow="1" padding="4" margin="0"
+                    border="0" background-color="003C3C3C">
+                <View flex-grow="1.25" background-color="00000000" lookAndFeel="OrganLAF"
+                      display="contents" flex-wrap="nowrap" border-color="0"/>
+                <Slider parameter="P4'" caption="4'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="000000000"
+                        caption-color="FFC4C4C4"/>
+                <Slider parameter="P2'" caption="2'" flex-shrink="1" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="00000000"
+                        caption-color="FFC4C4C4"/>
+              </View>
+            </View>
+          </View>
+          <View id="Harmonics" flex-direction="row" border="" margin="2" lookAndFeel="OrganLAF"
+                background-color="FF373737" radius="4" padding="0">
+            <Slider parameter="P223'" caption="2-2/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+            <Slider parameter="P513'" caption="5-1/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+          </View>
+        </View>
+        <View id="Flutes" flex-direction="column" padding="0" margin="2" background-color="0000000000">
+          <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
+                lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
+                radius="4" padding="0">
+            <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
+                   text="Flute" editable="0" font-size="20" margin="2" padding="0"
+                   lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
+                   label-text="FFC4C4C4" border="0"/>
+            <View background-color="0000000000">
+              <View flex-direction="column" flex-grow="2.5" margin="0" padding="0"
+                    border="0" background-color="0000000000">
+                <Slider parameter="F8'" caption="8'" flex-grow="1.5" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" border="0" margin="0" padding="0"
+                        lookAndFeel="OrganLAF" caption-size="26" slider-thumb="FFC50000"
+                        slider-track="FF898989" background-color="000000000" caption-color="FFC4C4C4"/>
+                <Slider parameter="F16'" caption="16'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-thumb="FF01A326" slider-track="FF898989" border-color=""
+                        background-color="00000000" caption-color="FFC4C4C4"/>
+              </View>
+              <View flex-direction="column" flex-grow="1" padding="4" margin="0"
+                    border="0" background-color="003C3C3C">
+                <View flex-grow="1.25" background-color="00000000" lookAndFeel="OrganLAF"
+                      display="contents" flex-wrap="nowrap" border-color="0"/>
+                <Slider parameter="F4'" caption="4'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="000000000"
+                        caption-color="FFC4C4C4"/>
+                <Slider parameter="F2'" caption="2'" flex-shrink="1" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="00000000"
+                        caption-color="FFC4C4C4"/>
+              </View>
+            </View>
+          </View>
+          <View id="Harmonics" flex-direction="row" border="" margin="2" lookAndFeel="OrganLAF"
+                background-color="FF373737" radius="4" padding="0">
+            <Slider parameter="F223'" caption="2-2/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+            <Slider parameter="F513'" caption="5-1/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+          </View>
+        </View>
+        <View id="Violin" flex-direction="column" padding="0" margin="2" background-color="0000000000">
+          <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
+                lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
+                radius="4" padding="0">
+            <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
+                   text="Violin" editable="0" font-size="20" margin="0" padding="2"
+                   lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
+                   label-text="FFC4C4C4" border="0"/>
+            <View background-color="000000000000">
+              <View flex-direction="column" flex-grow="2.5" margin="0" padding="0"
+                    border="0" background-color="0000000000">
+                <Slider parameter="V8'" caption="8'" flex-grow="1.5" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" border="0" margin="0" padding="0"
+                        lookAndFeel="OrganLAF" caption-size="26" slider-thumb="FFC50000"
+                        slider-track="FF898989" background-color="000000000" caption-color="FFC4C4C4"/>
+                <Slider parameter="V16'" caption="16'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-thumb="FF01A326" slider-track="FF898989" border-color=""
+                        background-color="00000000" caption-color="FFC4C4C4"/>
+              </View>
+              <View flex-direction="column" flex-grow="1" padding="4" margin="0"
+                    border="0" background-color="003C3C3C">
+                <View flex-grow="1.25" background-color="00000000" lookAndFeel="OrganLAF"
+                      display="contents" flex-wrap="nowrap" border-color="0"/>
+                <Slider parameter="V4'" caption="4'" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="000000000"
+                        caption-color="FFC4C4C4"/>
+                <Slider parameter="V2'" caption="2'" flex-shrink="1" slider-type="rotary-horizontal-vertical"
+                        slider-textbox="no-textbox" margin="0" padding="0" border="0"
+                        slider-track="FF898989" slider-thumb="FF003AC5" background-color="00000000"
+                        caption-color="FFC4C4C4"/>
+              </View>
+            </View>
+          </View>
+          <View id="Harmonics" flex-direction="row" border="" margin="2" lookAndFeel="OrganLAF"
+                background-color="FF373737" radius="4" padding="0">
+            <Slider parameter="V223'" caption="2-2/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+            <Slider parameter="V513'" caption="5-1/3'" slider-type="rotary-horizontal-vertical"
+                    slider-textbox="no-textbox" margin="2" slider-track="FF898989"
+                    slider-thumb="FFE3C100" background-color="00000000" caption-color="FFC4C4C4"/>
+          </View>
+        </View>
+      </View>
+      <View flex-direction="column" margin="0" padding="0" background-color="000000000">
+        <Slider parameter="Output Gain" slider-textbox="no-textbox" caption="Gain"
+                padding="0" margin="20" background-color="00000000" caption-color="FFC4C4C4"
+                lookAndFeel="OrganLAF" slider-thumb="FFFFFFF7" slider-background="FF868686"
+                slider-track="FFC50000"/>
+        <Slider parameter="Attack" slider-textbox="no-textbox" caption="Attack"
+                padding="0" margin="20" background-color="000000000000" caption-color="FFC4C4C4"
+                lookAndFeel="OrganLAF" slider-thumb="FFFFFFF7" slider-track="FFC50000"
+                slider-background="FF868686"/>
+      </View>
+    </View>
+    <View background-color="00000000">
+      <KeyboardComponent background-color="00000000"/>
+    </View>
+  </View>
+</magic>
+ 

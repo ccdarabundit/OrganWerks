@@ -1,9 +1,7 @@
 .DS_Store
 
-sdk/faust
-sdk/foleys_gui_magic
-sdk/JUCE
-
+# Folders
+sdk
 _deps
-
 build
+
