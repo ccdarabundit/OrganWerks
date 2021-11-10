@@ -285,7 +285,7 @@ private:
         
         // Set the MIDI note and ready to play
         fUI->setParamValue("MIDI Note", midiNoteNumber);
-        // fUI->setParamValue("Flow Gain", (std::log(74) + 2)/(std::log(1+midiNoteNumber) + 2));
+        fUI->setParamValue("Flow Gain", (std::log(74) + 2)/(std::log(1+midiNoteNumber) + 2));
         selectPipe(midiNoteNumber);
         return 1;
     }

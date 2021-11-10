@@ -38,7 +38,7 @@
               background-color="0000000000">
           <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
                 lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
-                radius="4" padding="0">
+                radius="4" padding="0" background-image="Principal_png">
             <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
                    text="Principal" editable="0" font-size="20" margin="2" padding="0"
                    lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
@@ -83,7 +83,7 @@
         <View id="Flutes" flex-direction="column" padding="0" margin="2" background-color="0000000000">
           <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
                 lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
-                radius="4" padding="0">
+                radius="4" padding="0" background-image="Principal_png">
             <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
                    text="Flute" editable="0" font-size="20" margin="2" padding="0"
                    lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
@@ -128,7 +128,7 @@
         <View id="Violin" flex-direction="column" padding="0" margin="2" background-color="0000000000">
           <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
                 lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
-                radius="4" padding="0">
+                radius="4" padding="0" background-image="Principal_png">
             <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
                    text="Violin" editable="0" font-size="20" margin="0" padding="2"
                    lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
@@ -173,7 +173,7 @@
         <View id="Gedeckt" flex-direction="column" padding="0" margin="2" background-color="0000000000">
           <View border="0" flex-direction="column" flex-grow="3" id="Octaves"
                 lookAndFeel="OrganLAF" background-color="FF1F1F1F" margin="2"
-                radius="4" padding="0">
+                radius="4" padding="0" background-image="Gedeckt_png">
             <Label flex-shrink="1" flex-grow="0.075" justification="centred-top"
                    text="Gedeckt" editable="0" font-size="20" margin="0" padding="2"
                    lookAndFeel="OrganLAF" flex-align-self="auto" background-color="00000000"
