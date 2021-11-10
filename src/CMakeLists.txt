@@ -98,6 +98,7 @@ target_sources(${BASE_TARGET} PRIVATE
     gui/organLAF.cpp
     # Generated Faust Files
     dsp/faust_src/gen/flueEngine.h
+    dsp/faust_src/gen/gedecktEngine.h
 )
 target_precompile_headers(${BASE_TARGET} PRIVATE pch.h)
 # Add in Faust directory

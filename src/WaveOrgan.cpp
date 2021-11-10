@@ -33,6 +33,14 @@ namespace violinIDs {
     static String two ("V2'");
 }
 
+namespace gedecktIDs {
+    static String eight ( "G8'");
+    static String sixt ( "G16'");
+    static String four ( "G4'");
+    static String twothree ("G223'");
+    static String fivethree ("G513'");
+}
+
 juce::AudioProcessorValueTreeState::ParameterLayout OrganWaveguide::createParameterLayout()
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
@@ -70,7 +78,14 @@ juce::AudioProcessorValueTreeState::ParameterLayout OrganWaveguide::createParame
     vGroup->addChild(std::make_unique<juce::AudioParameterFloat>(violinIDs::fivethree,  "5-1/3'",  gRange, 0.0f));
     vGroup->addChild(std::make_unique<juce::AudioParameterFloat>(violinIDs::two,  "2'",  gRange, 0.0f));
     
-    layout.add (std::move(group), std::move(pGroup), std::move(fGroup), std::move(vGroup));
+    auto gGroup = std::make_unique<juce::AudioProcessorParameterGroup>("gedeckt", "Gedeckt", "|");
+    gGroup->addChild(std::make_unique<juce::AudioParameterFloat>(gedecktIDs::eight,  "8'",  gRange, 0.0f));
+    gGroup->addChild(std::make_unique<juce::AudioParameterFloat>(gedecktIDs::sixt,  "16'",  gRange, 0.0f));
+    gGroup->addChild(std::make_unique<juce::AudioParameterFloat>(gedecktIDs::four,  "4'",  gRange, 0.0f));
+    gGroup->addChild(std::make_unique<juce::AudioParameterFloat>(gedecktIDs::twothree,  "2-2/3'",  gRange, 0.0f));
+    gGroup->addChild(std::make_unique<juce::AudioParameterFloat>(gedecktIDs::fivethree,  "5-1/3'",  gRange, 0.0f));
+    
+    layout.add (std::move(group), std::move(pGroup), std::move(fGroup), std::move(vGroup), std::move(gGroup));
     return layout;
 }
 //==============================================================================
@@ -113,6 +128,13 @@ treeState (*this,
     treeState.addParameterListener(violinIDs::twothree, this);
     treeState.addParameterListener(violinIDs::fivethree, this);
     treeState.addParameterListener(violinIDs::two, this);
+    
+    treeState.addParameterListener(gedecktIDs::eight, this);
+    treeState.addParameterListener(gedecktIDs::sixt, this);
+    treeState.addParameterListener(gedecktIDs::four, this);
+    treeState.addParameterListener(gedecktIDs::twothree, this);
+    treeState.addParameterListener(gedecktIDs::fivethree, this);
+    
     treeState.addParameterListener(parameterIDs::attack, this);
     treeState.addParameterListener(parameterIDs::outgain, this);
     
@@ -148,6 +170,12 @@ treeState (*this,
         Organ[VIOLIN223].addVoice(new OrganVoice(VIOLIN223));
         Organ[VIOLIN513].addVoice(new OrganVoice(VIOLIN513));
         Organ[VIOLIN2].addVoice(new OrganVoice(VIOLIN2));
+        
+        Organ[GEDECKT8].addVoice(new OrganVoice(GEDECKT8));
+        Organ[GEDECKT4].addVoice(new OrganVoice(GEDECKT4));
+        Organ[GEDECKT16].addVoice(new OrganVoice(GEDECKT16));
+        Organ[GEDECKT223].addVoice(new OrganVoice(GEDECKT223));
+        Organ[GEDECKT513].addVoice(new OrganVoice(GEDECKT513));
     }
     
     // Add Sounds
@@ -360,6 +388,17 @@ void OrganWaveguide::parameterChanged (const juce::String& param, float value)
         setStopGain(value, VIOLIN513);
     else if (param == violinIDs::two)
         setStopGain(value, VIOLIN2);
+    
+    if (param == gedecktIDs::eight)
+        setStopGain(value, GEDECKT8);
+    else if (param == gedecktIDs::four)
+        setStopGain(value, GEDECKT4);
+    else if (param == gedecktIDs::sixt)
+        setStopGain(value, GEDECKT16);
+    else if (param == gedecktIDs::twothree)
+        setStopGain(value, GEDECKT223);
+    else if (param == gedecktIDs::fivethree)
+        setStopGain(value, GEDECKT513);
     
     if (param == parameterIDs::attack)
         setEnvelopeAttack(value);

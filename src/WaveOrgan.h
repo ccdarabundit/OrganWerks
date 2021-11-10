@@ -7,7 +7,7 @@
 #include "gui/organLAF.h"
 
 // Define number of pipes
-#define NUM_RANKS 18
+#define NUM_RANKS 23
 #define NUM_VOICES 12
 
 

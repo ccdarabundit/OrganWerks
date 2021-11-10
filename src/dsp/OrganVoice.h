@@ -18,7 +18,10 @@
 namespace Faust
 {
     #include "faust_src/gen/flueEngine.h"
+    #include "faust_src/gen/gedecktEngine.h"
+    class dsp;
     class flueEngine;
+    class gedecktEngine;
     class MapUI;
 }
 
@@ -48,7 +51,13 @@ enum Rank
     VIOLIN513,
     VIOLIN4,
     VIOLIN223,
-    VIOLIN2
+    VIOLIN2,
+    // Gedeckt
+    GEDECKT8,
+    GEDECKT16,
+    GEDECKT513,
+    GEDECKT4,
+    GEDECKT223
 };
 
 class OrganVoice : public SynthesiserVoice
@@ -75,15 +84,20 @@ public:
     OrganVoice(Rank newRank)
     {
         // Build Faust
-        fDSP = new Faust::flueEngine();
+        if (newRank >= GEDECKT8 && newRank <= GEDECKT223)
+        {
+            fDSP = new Faust::gedecktEngine();
+        }
+        else
+        {
+            fDSP = new Faust::flueEngine();
+        }
+        voiceRank = newRank;
         fDSP->init(getSampleRate());
         fUI = new Faust::MapUI();
         fDSP->buildUserInterface(fUI);
         // Set constant UIs
         fUI->setParamValue("Jet Offset", 0);
-        fUI->setParamValue("Mix", 0.75);
-        // Set Rank
-        voiceRank = newRank;
         fs = getSampleRate();
         oneOverFs = 1.f/fs;
         fDSP->instanceClear();
@@ -202,7 +216,7 @@ public:
 private:
     // Faust system
     Faust::MapUI* fUI;
-    Faust::flueEngine* fDSP;
+    Faust::dsp* fDSP;
 
     float fs, oneOverFs;
     bool offFlag = true;
@@ -212,13 +226,15 @@ private:
     Rank voiceRank;
     
     // Static coefs for different pipe frequencies
-    static double principalDelay[65];
-    static double principalCoefs[65][5];
-    static double fluteDelay[65];
-    static double fluteCoefs[65][5];
-    static double violinDelay[65];
-    static double violinCoefs[65][5];
-    
+    static double principalDelay[73];
+    static double principalCoefs[73][5];
+    static double fluteDelay[73];
+    static double fluteCoefs[73][5];
+    static double violinDelay[73];
+    static double violinCoefs[73][5];
+    static double gedecktDelay[73];
+    static double gedecktCoefs[73][5];
+
     // Private functions
     bool setMidi(int midiNoteNumber)
     {
@@ -228,25 +244,30 @@ private:
             case PRINCIPAL8:
             case FLUTE8:
             case VIOLIN8:
+            case GEDECKT8:
                 break;
             case PRINCIPAL4:
             case FLUTE4:
             case VIOLIN4:
+            case GEDECKT4:
                 midiNoteNumber += 12;
                 break;
             case PRINCIPAL16:
             case FLUTE16:
             case VIOLIN16:
+            case GEDECKT16:
                 midiNoteNumber -= 12;
                 break;
             case PRINCIPAL513:
             case FLUTE513:
             case VIOLIN513:
+            case GEDECKT513:
                 midiNoteNumber += 7;
                 break;
             case PRINCIPAL223:
             case FLUTE223:
             case VIOLIN223:
+            case GEDECKT223:
                 midiNoteNumber += 19;
                 break;
             case PRINCIPAL2:
@@ -257,13 +278,14 @@ private:
         }
         
         // If outside available pipes return false
-        if (midiNoteNumber < 32)
+        if (midiNoteNumber < 24)
             return 0;
         if (midiNoteNumber > 96)
             return 0;
         
         // Set the MIDI note and ready to play
         fUI->setParamValue("MIDI Note", midiNoteNumber);
+        // fUI->setParamValue("Flow Gain", (std::log(74) + 2)/(std::log(1+midiNoteNumber) + 2));
         selectPipe(midiNoteNumber);
         return 1;
     }
@@ -286,7 +308,7 @@ private:
     // Select the correct coef and delay compenstation
     void selectPipe(int midiNoteNumber)
     {
-        int mInd = midiNoteNumber - 32;
+        int mInd = midiNoteNumber - 24;
         float b0, b1, b2, a1, a2, delay;
         if (voiceRank >= PRINCIPAL8 && voiceRank <= PRINCIPAL2)
         {
@@ -305,6 +327,13 @@ private:
             b0 = violinCoefs[mInd][0]; b1 = violinCoefs[mInd][1]; b2 = violinCoefs[mInd][2];
             a1 = violinCoefs[mInd][3]; a2 = violinCoefs[mInd][4];
             delay = violinDelay[mInd];
+        }
+
+        else if (voiceRank >= GEDECKT8 && voiceRank <= GEDECKT223)
+        {
+            b0 = gedecktCoefs[mInd][0]; b1 = gedecktCoefs[mInd][1]; b2 = gedecktCoefs[mInd][2];
+            a1 = gedecktCoefs[mInd][3]; a2 = gedecktCoefs[mInd][4];
+            delay = gedecktDelay[mInd];
         }
         
         fUI->setParamValue("b0", b0);
