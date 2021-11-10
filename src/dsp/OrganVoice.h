@@ -278,14 +278,14 @@ private:
         }
         
         // If outside available pipes return false
-        if (midiNoteNumber < 24)
+        if (midiNoteNumber < 32)
             return 0;
         if (midiNoteNumber > 96)
             return 0;
         
         // Set the MIDI note and ready to play
         fUI->setParamValue("MIDI Note", midiNoteNumber);
-        fUI->setParamValue("Flow Gain", (std::log(74) + 2)/(std::log(1+midiNoteNumber) + 2));
+        fUI->setParamValue("Flow Gain", (std::log(74) + 2)/(std::log(1+midiNoteNumber-24) + 2));
         selectPipe(midiNoteNumber);
         return 1;
     }
@@ -331,6 +331,8 @@ private:
 
         else if (voiceRank >= GEDECKT8 && voiceRank <= GEDECKT223)
         {
+            if (mInd == 59- 24 || mInd == 58- 24 || mInd == 57-24)
+                mInd = 60- 24;
             b0 = gedecktCoefs[mInd][0]; b1 = gedecktCoefs[mInd][1]; b2 = gedecktCoefs[mInd][2];
             a1 = gedecktCoefs[mInd][3]; a2 = gedecktCoefs[mInd][4];
             delay = gedecktDelay[mInd];
