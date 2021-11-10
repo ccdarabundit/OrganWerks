@@ -10,7 +10,6 @@ function(faust_add_file TARGET FILE	CLASS)
 
 	# Make the directory
 	file(MAKE_DIRECTORY ${genDir})
-
 	# Add the directory to the executable
 	target_include_directories(${TARGET} PRIVATE ${genDir})
     target_include_directories(${TARGET} PRIVATE ${Faust_SOURCE_DIR}/architecture)

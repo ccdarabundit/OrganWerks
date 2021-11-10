@@ -5,7 +5,7 @@ set(COMPANY_NAME "Champion Sound Systems")
 set (PRODUCT_NAME "Wave Organ")
 
 # Target for the plugin
-set (BASE_TARGET "${PROJECT_NAME}")
+set (BASE_TARGET "${PROJECT_NAME}" CACHE INTERNAL "")
 
 ##############################
 # INITIALIZE JUCE MODULES
@@ -88,9 +88,17 @@ target_sources(${BASE_TARGET} PRIVATE
     # JUCE FILES
     WaveOrgan.cpp
     
+    # DSP Files
+    dsp/declicker.h 
+    dsp/OrganSound.h
+    dsp/OrganVoice.h
+    dsp/lossyPipeCoefs.cpp
+
+    # GUI
+    gui/organLAF.cpp
     # Generated Faust Files
-
+    dsp/faust_src/gen/flueEngine.h
 )
-
+target_precompile_headers(${BASE_TARGET} PRIVATE pch.h)
 # Add in Faust directory
 add_subdirectory(dsp)

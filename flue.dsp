@@ -28,7 +28,7 @@ with{
 	mouthDelay = totalDelay/2;
 
 	bcoefs = (b0, b1, b2);
-	acoefs = (a0, a1);
+	acoefs = (a1, a2);
 	rFilt = fi.iir(bcoefs, acoefs);
 	tFilt = _*1.0;
 	outFilt1 = _*(1-mix);
