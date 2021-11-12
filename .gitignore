@@ -5,6 +5,3 @@ sdk
 _deps
 build
 
-!src/dsp/
-!src/dsp/gen
-src/dsp/*/

@@ -1,0 +1,24 @@
+import("stdfaust.lib");
+
+waveguide(maxPipeDelay, 
+initDelay, 
+postDelay, 
+rFilt,
+tFilt,
+outFilt1, 
+outFilt2) = (+<: (initDL <: (rFilt:postDL), outFilt2 ), outFilt1)~(tFilt) : _, _+_
+with{
+	initDL = de.fdelay4(maxPipeDelay, initDelay);
+	postDL = de.fdelay4(maxPipeDelay, postDelay);
+};
+
+labium(gate, maxMouthDelay, mouthDelay) = _*feedbackGain+jet:mouthDL:NL:_
+with{
+	flowGain = nentry("Flow Gain", 1, 0.5, 10, 0.01): si.smoo;
+	jetOffset = nentry("Jet Offset", 0, -1.0, 1.0, 0.01): si.smoo;
+	feedbackGain = nentry("Feedback Gain", 0.4, 0, 5, 0.01): si.smoo;
+
+	jet = no.noise * gate;
+	mouthDL = de.fdelay4(maxMouthDelay, mouthDelay);
+	NL = _ : ma.tanh*-flowGain + jetOffset;
+};
